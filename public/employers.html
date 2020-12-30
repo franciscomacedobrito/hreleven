@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+
+    <title>Eleven HR Services</title>
+
+    <!-- Fav Icon -->
+    <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;0,900;1,300;1,400;1,500;1,700;1,900&display=swap"
+          rel="stylesheet">
+
+    <script src="node_modules/jquery/dist/jquery.min.js"></script>
+    <!-- Stylesheets -->
+    <link href="assets/css/font-awesome-all.css" rel="stylesheet">
+    <link href="assets/css/flaticon.css" rel="stylesheet">
+    <link href="assets/css/owl.css" rel="stylesheet">
+    <link href="assets/css/bootstrap.css" rel="stylesheet">
+    <link href="assets/css/jquery.fancybox.min.css" rel="stylesheet">
+    <link href="assets/css/animate.css" rel="stylesheet">
+    <link href="assets/css/color.css" rel="stylesheet">
+    <link href="assets/css/style.css" rel="stylesheet">
+    <link href="assets/css/responsive.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+
+    <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-analytics.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-firestore.js"></script>
+
+    <script>
+
+        // Your web app's Firebase configuration
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        var firebaseConfig = {
+            apiKey: "AIzaSyCRwbciCraefLIs4JW3Ed8N6KthkigmjCI",
+            authDomain: "eleven-hr-services-website.firebaseapp.com",
+            projectId: "eleven-hr-services-website",
+            storageBucket: "eleven-hr-services-website.appspot.com",
+            messagingSenderId: "1056727308710",
+            appId: "1:1056727308710:web:0ed907feeae31763a25767",
+            measurementId: "G-177C3JT0QT"
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        firebase.analytics();
+
+        const db = firebase.firestore();
+
+        var hasError = false;
+
+        setTimeout(function () {
+
+            var fieldWithError = null;
+
+            var form = document.getElementsByTagName('form')[0];
+            var email = document.getElementById('email');
+            var title = document.getElementById('title');
+            var name = document.getElementById('name');
+            var phone = document.getElementById('phone');
+            var company = document.getElementById('company');
+            var position = document.getElementById('position');
+            var job = document.getElementById('job');
+            var comments = document.getElementById('comments');
+            var button = document.getElementById('button');
+
+            function resetForm() {
+                button.disabled = false;
+                button.classList.remove('form-disabled');
+                name.classList.remove('form-disabled');
+                phone.classList.remove('form-disabled');
+                email.classList.remove('form-disabled');
+                position.classList.remove('form-disabled');
+                company.classList.remove('form-disabled');
+                title.classList.remove('form-disabled');
+                job.classList.remove('form-disabled');
+                comments.classList.remove('form-disabled');
+            }
+
+            function resetFormValue(fields) {
+                fields.forEach(field => {
+                    field.value = '';
+                })
+            }
+
+            function validateFields(fields) {
+                fields.forEach(field => {
+                    if (!field.validity.valid) {
+                        field.classList.add('form-input-error');
+                        hasError = true;
+
+                        if(!fieldWithError) {
+                            fieldWithError = field;
+                        }
+                    }
+                })
+            }
+
+            function resetFields(fields) {
+                fields.forEach(field => {
+                    field.addEventListener("input", function () {
+                        field.classList.remove('form-input-error');
+                    }, false);
+                })
+            }
+
+            resetFields([email, phone, comments, job, title, position, company, name]);
+
+            form.addEventListener("submit", function (event) {
+
+                hasError = false;
+                button.disabled = true;
+
+                function disabledForm(fields) {
+                    fields.forEach(field => {
+                        field.classList.add('form-disabled');
+                    })
+                }
+
+                disabledForm([button, email, phone, comments, job, title, position, company, name])
+
+                event.preventDefault();
+                validateFields([email, phone, comments, job, title, position, company, name], event)
+
+                if (!hasError) {
+                    //[email, phone, comments, job, title, position, company, name]
+                    db.collection("employers-messages").doc(company.value + '-' + position.value + '-' + new Date().toISOString()).set({
+                        name: name.value,
+                        email: email.value,
+                        phone: phone.value,
+                        comments: comments.value,
+                        job: job.value,
+                        title: title.value,
+                        position: position.value,
+                        company: company.value,
+                        date: new Date()
+                    }).then(function () {
+                        toastr.success('Your message was sent thanks for reaching us, we will contact you as soon as possible');
+                    }).catch(function () {
+                        toastr.error('An error occurred while trying to send your message, please try again later.');
+                    }).finally(() => {
+                        resetForm();
+                        resetFormValue([email, phone, comments, job, title, position, company, name]);
+                    });
+                } else {
+                    if(fieldWithError) {
+                        fieldWithError.scrollIntoView({block: "center", behavior: "smooth"});
+                    }
+                    resetForm();
+                }
+
+            }, false);
+        })
+    </script>
+
+</head>
+
+
+<!-- page wrapper -->
+<body>
+
+<div class="boxed_wrapper">
+
+
+    <!-- preloader -->
+    <div class="preloader"></div>
+    <!-- preloader -->
+
+    <!-- main header -->
+    <header class="main-header style-one">
+        <!-- header-top -->
+        <div class="header-top">
+            <div class="top-inner clearfix">
+                <ul class="info-list pull-left clearfix">
+                    <li><i class="flaticon-telephone"></i><a href="mailto:elevenhrservices@gmail.com">elevenhrservices@gmail.com</a>
+                    </li>
+                    <li><i class="flaticon-telephone"></i><a href="tel:781 277 7449">781 277 7449</a></li>
+                    <li><i class="flaticon-pin"></i>South Shori MA USA</li>
+                </ul>
+                <div class="right-column pull-right clearfix">
+                    <ul class="social-links clearfix">
+                        <li><a href="https://www.instagram.com/elevenhrservices/" target="_blank"><i
+                                class="fab fa-instagram"></i></a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- header-lower -->
+        <div class="header-lower">
+            <div class="outer-box">
+                <div class="logo-box">
+                    <figure class="logo"><a href="index.html"><img src="assets/images/logo.png"
+                                                                   style="height: 45px!important;" alt=""></a></figure>
+                </div>
+                <div class="menu-area">
+                    <!--Mobile Navigation Toggler-->
+                    <div class="mobile-nav-toggler">
+                        <i class="icon-bar"></i>
+                        <i class="icon-bar"></i>
+                        <i class="icon-bar"></i>
+                    </div>
+                    <nav class="main-menu navbar-expand-md navbar-light">
+                        <div class="collapse navbar-collapse show clearfix" id="navbarSupportedContent">
+                            <ul class="navigation clearfix">
+                                <li><a href="index.html">Home</a>
+                                <li><a href="about.html">About us</a>
+                                </li>
+                                <li class="current"><a>Employers</a>
+                                </li>
+                                <li><a href="job-seekers.html">Job seekers</a>
+                                </li>
+                                <li><a href="contact.html">Contact</a></li>
+                            </ul>
+                        </div>
+                    </nav>
+                </div>
+                <div class="menu-right-content clearfix">
+                    <div class="btn-box">
+                        <a href="contact.html" class="theme-btn-one">Book appointment</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--sticky Header-->
+        <div class="sticky-header">
+            <div class="outer-box">
+                <div class="logo-box">
+                    <figure class="logo"><a href="index.html"><img src="assets/images/logo-2.png"
+                                                                   style="height: 45px !important;" alt=""></a></figure>
+                </div>
+                <div class="menu-area">
+                    <nav class="main-menu clearfix">
+                    </nav>
+                </div>
+                <div class="menu-right-content clearfix">
+                    <div class="btn-box">
+                        <a href="contact.html" class="theme-btn-one">Book appointment</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- main-header end -->
+
+    <!-- Mobile Menu  -->
+    <div class="mobile-menu">
+        <div class="menu-backdrop"></div>
+        <div class="close-btn"><i class="fas fa-times"></i></div>
+
+        <nav class="menu-box">
+            <div class="nav-logo"><a href="index.html"><img src="assets/images/logo.png" style="height: 20px;" alt="" title=""></a></div>
+            <div class="menu-outer">
+                <!--Here Menu Will Come Automatically Via Javascript / Same Menu as in Header--></div>
+            <div class="contact-info">
+                <h4>Contact Info</h4>
+                <ul>
+                    <li>South Shori MA USA</li>
+                    <li><a href="tel:781.277.7449">781.277.7449</a></li>
+                    <li><a href="mailto:elevenhrservices@gmail.com">elevenhrservices@gmail.com</a></li>
+                </ul>
+            </div>
+            <div class="social-links">
+                <ul class="clearfix">
+                    <li><a href="https://www.instagram.com/elevenhrservices/" target="_blank"><span
+                            class="fab fa-instagram"></span></a></li>
+                </ul>
+            </div>
+        </nav>
+    </div><!-- End Mobile Menu -->
+
+
+    <!-- Page Title -->
+    <section class="page-title centred" style="background-image: url(assets/images/background/employers.jpg);">
+        <div class="auto-container">
+            <div class="content-box">
+                <div class="title">
+                    <h1>Employers</h1>
+                </div>
+                <ul class="bread-crumb clearfix">
+                    <li><a href="index.html">Home</a></li>
+                    <li>Employers</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+    <!-- End Page Title -->
+
+    <div class="col-lg-12 col-md-12 col-sm-12" style="    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #03517b;
+    font-weight: 500;
+    max-width: 1200px;
+    margin: auto;
+    margin-top: 45px;
+    margin-bottom: -37px;">
+        We specialize in matching the best talents with the right employers. Our process involves talent recruiting, onboarding, job placement and post job placement evaluation and support. Our prices are competitive and in alignment with customer needs. In a relatively tight market, our goal is to find the right fit for each role.
+    </div>
+
+    <!-- contact-section -->
+    <section class="contact-section sec-pad">
+        <div class="auto-container">
+            <div class="row clearfix">
+                <div class="col-lg-4 col-md-12 col-sm-12 title-column">
+                    <div class="title-inner">
+                        <div class="sec-title">
+                            <h2 style="    position: relative;
+    display: block;
+    font-size: 20px;
+    line-height: 45px;
+    font-weight: 700;
+    margin: 0px;
+    padding-right: 40px;
+    font-style: italic;
+    color: #848484;">“A recruiting company should be viewed as a business partner, someone who is critical to the success of the business.” </h2>
+                            <h3 style="position: relative;
+    display: block;
+    font-size: 12px;
+    line-height: 45px;
+    font-weight: 700;
+    margin: 0px;
+    font-style: italic;"> Mathew Caldwell </h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-8 col-md-12 col-sm-12 form-column">
+                    <div class="form-inner">
+                        <form novalidate>
+                            <div class="row clearfix">
+                                <div class="col-lg-6 col-md-6 col-sm-12 form-group">
+                                    <input type="text" class="form-input" id="title"
+                                           name="title"
+                                           placeholder="Title">
+                                </div>
+                                <div class="col-lg-6 col-md-6 col-sm-12 form-group">
+                                    <input type="text" class="form-input" id="name" name="username" required
+                                           placeholder="Full Name">
+                                </div>
+                                <div class="col-lg-6 col-md-6 col-sm-12 form-group">
+                                    <input type="text" class="form-input" id="company"
+                                           name="company"
+                                           required
+                                           placeholder="Company name">
+                                </div>
+                                <div class="col-lg-6 col-md-12 col-sm-12 form-group">
+                                    <input type="tel" class="form-input" id="phone" name="phone" required
+                                           placeholder="Phone Number">
+                                </div>
+                                <div class="col-lg-6 col-md-12 col-sm-12 form-group">
+                                    <input type="email" class="form-input" id="email" name="email" required
+                                           pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+                                           placeholder="Email">
+                                </div>
+                                <div class="col-lg-6 col-md-6 col-sm-12 form-group">
+                                    <input type="text" class="form-input" id="position"
+                                           name="position"
+                                           placeholder="Position hiring for">
+                                </div>
+                                <div class="col-lg-12 col-md-12 col-sm-12 form-group">
+                                    <input type="text" class="form-input" id="job" name="job" required
+                                           placeholder="Job Summary">
+                                </div>
+                                <div class="col-lg-12 col-md-12 col-sm-12 form-group">
+                                    <textarea name="message" class="form-input" id="comments" required minlength="10"
+                                              placeholder="Comments"></textarea>
+                                </div>
+                                <div class="col-lg-12 col-md-12 col-sm-12 form-group message-btn">
+                                    <button class="theme-btn-one" id="button" type="submit" name="submit-form">Send</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- contact-section end -->
+
+    <!-- main-footer -->
+    <footer class="main-footer">
+        <div class="footer-top" style="background-image: url(assets/images/background/footer-1.jpg);">
+            <div class="auto-container">
+                <div class="footer-info clearfix">
+                    <div class="single-item">
+                        <div class="inner">
+                            <div class="icon-box"><i class="flaticon-mail"></i></div>
+                            <h6>Email</h6>
+                            <p><a style="color: white" href="mailto:elevenhrservices@gmail.com">elevenhrservices@gmail.com</a>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="single-item">
+                        <div class="inner">
+                            <div class="icon-box"><i class="flaticon-phone"></i></div>
+                            <h6>Call</h6>
+                            <p><a href="tel:7812777449">781.277.7449</a></p>
+                        </div>
+                    </div>
+                    <div class="single-item" id="contact">
+                        <div class="inner">
+                            <div class="icon-box"><i class="flaticon-address"></i></div>
+                            <h6>Address</h6>
+                            <p>South Shori MA USA</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="widget-section">
+                    <div class="row clearfix">
+                        <div class="col-lg-4 col-md-6 col-sm-12 footer-column">
+                            <div class="footer-widget logo-widget">
+                                <ul class="social-links clearfix">
+                                    <li><a href="https://www.instagram.com/elevenhrservices/" target="_blank"><i
+                                            style="font-size: 40px" class="fab fa-instagram"></i></a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-6 col-sm-12 footer-column">
+                            <div class="footer-widget links-widget">
+                                <div class="widget-title">
+                                    <h4>Explore</h4>
+                                </div>
+                                <div class="widget-content">
+                                    <ul class="links-list clearfix">
+                                        <li><a href="about.html">About</a></li>
+                                        <li><a href="contact.html">Contact Us</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-6 col-sm-12 footer-column">
+                            <div class="footer-widget links-widget ml-30">
+                                <div class="widget-title">
+                                    <h4>Links</h4>
+                                </div>
+                                <div class="widget-content">
+                                    <ul class="links-list clearfix">
+                                        <li><a href="employers.html">Employers</a></li>
+                                        <li><a href="job-seekers.html">Job Seekers</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="auto-container">
+                <div class="inner-box clearfix">
+                    <div class="copyright pull-left">
+                        <p>&copy; Copyright 2020 by <a href="index.html">Eleven HR services</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <!-- main-footer end -->
+
+    <!--Scroll to top-->
+    <button class="scroll-top scroll-to-target" data-target="html">
+        <span class="fa fa-arrow-up"></span>
+    </button>
+</div>
+
+
+<!-- jequery plugins -->
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/popper.min.js"></script>
+<script src="assets/js/bootstrap.min.js"></script>
+<script src="assets/js/owl.js"></script>
+<script src="assets/js/wow.js"></script>
+<script src="assets/js/validation.js"></script>
+<script src="assets/js/jquery.fancybox.js"></script>
+<script src="assets/js/appear.js"></script>
+<script src="assets/js/scrollbar.js"></script>
+<script src="assets/js/isotope.js"></script>
+
+<!-- map script -->
+<script src="assets/js/gmaps.js"></script>
+<script src="assets/js/map-helper.js"></script>
+
+<!-- main-js -->
+<script src="assets/js/script.js"></script>
+
+</body><!-- End of .page_wrapper -->
+</html>
